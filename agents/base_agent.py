@@ -216,12 +216,15 @@ class BaseAgent:
                 elif self.provider == "google" and "meta" in self.model:
                     response = self._call_google_meta_api(messages, temperature)
                 elif self.provider == "sglang":
-                    response = self.client.chat.completions.create(
-                        model=self.model,
-                        messages=messages,
-                        temperature=temperature,
-                        max_tokens=2048,
-                    )
+                    api_params = {
+                        "model": self.model,
+                        "messages": messages,
+                        "temperature": temperature,
+                        "max_tokens": 4096,
+                    }
+                    if response_format:
+                        api_params["response_format"] = response_format
+                    response = self.client.chat.completions.create(**api_params)
                     response = response.choices[0].message.content
                 else:
                     api_params = {
